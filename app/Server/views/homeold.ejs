@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script src="/vendor/jquery.min.js"></script>
+	<script src="/vendor/jquery.form.js"></script>
+	<script src="/vendor/bootstrap-modal.js"></script>
+	<script src="/vendor/bootstrap-transition.js"></script>
+	<script src="/js/views/home.js"></script>
+	<script src="/js/controllers/homeController.js"></script>
+	<script src="/js/form-validators/accountValidator.js"></script>
+    <script src="/js/views/statusPlaceOrder.js"></script>
+    <script src="/vendor/bootbox.min.js"></script>
+    <script>
+        order={
+            "stock":"",
+            "type":"",
+            "subtype":"",
+            "price":"",
+            "quantity":""
+
+        };
+        $(document).ready(function(){
+            /*
+            $("#place").click(function(){
+                order.stock = document.getElementById("stock").value;
+                order.type = document.getElementById("type").value;
+                order.pricetype = document.getElementById("pricetype").value;
+                order.tif = document.getElementById("subtype").value;
+                order.price = parseFloat(document.getElementById("price").value);
+                order.quantity = parseInt(document.getElementById("quantity").value);
+                $.ajax({
+                    url : "http://localhost:8000/place_trade",
+                    type: "POST",
+                    data : order,
+                    success: function(data, textStatus, jqXHR)
+                    {
+                        //data - response from server
+                    },
+                    error: function (jqXHR, textStatus, errorThrown)
+                    {
+
+                    }
+                });
+
+            });
+             */
+        });
+    </script>
+	 <title>Node.js Login</title>
+    <link rel="stylesheet" href="/vendor/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-1890531-10']);
+      _gaq.push(['_setDomainName', 'braitsch.io']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+       ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+	
+</head>
+
+<body>
+
+  <div class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container-fluid">
+        <ul id="global-nav" class="nav pull-left"><a href="#" class="brand">Control Panel</a></ul>
+        <button id="btn-logout" class="btn btn-primary"><i class="icon-lock icon-white"></i>Sign Out</button>
+      </div>
+    </div>
+  </div>
+<div style="margin:50px;">
+Stock: <input type="text" id="stock" value="goog"><br>
+Type: <select id="type">
+    <option value="buy">Buy</option>
+    <option value="sell">Sell</option>
+</select><br>
+PriceType: <select id="pricetype">
+        <option value="LOrder">Limit Order</option>
+        <option value="MOrder">Market Order</option>
+</select><br>
+TIF:    <select id ="subtype">
+    <option value="gtc">GTC</option>
+    <option value="fok">FOK</option>
+</select><br>
+Price:<input type="text" id="price" value=""><br>
+Quantity:<input type="text" id="quantity" value=""><br>
+<input type="button" id="place" value="Place Order">
+</div>
+
+
+
+</body>
+</html>

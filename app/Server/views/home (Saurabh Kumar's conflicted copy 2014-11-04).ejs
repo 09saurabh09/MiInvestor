@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>SB Admin - Bootstrap Admin Template</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="/vendor/bootstrap.min.css" rel="stylesheet">
+	
+	 <!-- jQuery UI Core CSS -->
+	
+	<!-- <link rel="stylesheet" href="http://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css"> -->
+		 <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Vollkorn">
+
+    <link rel="stylesheet" href="/vendor/jquery-ui.min1.11.2.css">
+	
+    <!-- Custom CSS -->
+    <link href="/vendor/sb-admin.css" rel="stylesheet">
+
+    <!-- Morris Charts CSS -->
+    <link href="/vendor/morris.css" rel="stylesheet">
+	
+
+    <!-- Custom Fonts -->
+    <link href="/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	
+	<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+	<script src="http://code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="/js/Table-generators/defaultData.js"></script>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+	
+<style>
+	#project-label {
+	display: block;
+	font-weight: bold;
+	margin-bottom: 1em;
+	
+	}
+	#project-icon {
+	float: left;
+	height: 32px;
+	width: 32px;
+	}
+	#project-description {
+	margin: 0;
+	padding: 0;
+	
+	}
+	
+	.dropdowncustom{
+	padding-top:8px;
+	line-height:20px;
+	}
+	
+	.largeWidth {
+    margin: 0 auto;
+    width: 90%;
+}
+
+	h2,h3{
+    padding: 0px;
+    margin: 0px;
+	
+}
+
+    .loss{
+        color:red;
+    }
+    .profit{
+        color:green;
+    }
+    .change_price{
+        background:#FFFFFF;
+        transition: background 2s linear;
+        -webkit-transition: background 2s linear;
+        -moz-transition: background 2s linear;
+    }
+    td p,td{
+        padding:0px;
+        margin:0px;
+        background:#FFFFFF;
+        transition: background 2s linear;
+        -webkit-transition: background 2s linear;
+        -moz-transition: background 2s linear;
+    }
+	
+</style>
+
+
+<script>
+    var stocks = [
+        {
+            value: "goog",
+            label: "Google",
+            desc: "Search Engine"
+        },
+        {
+            value: "fb",
+            label: "Facebook",
+            desc: "Social Network"
+        },
+        {
+            value: "msft",
+            label: "Microsoft",
+            desc: "Tech Giant"
+        }
+    ];
+
+$( document ).ready(function() {
+$("#myModal").modal('show');
+//console.log(document.getElementsById('user').innerHTML);
+//console.log( getElementByXpath('//*[@id="user"]/text()').data);
+var username = getElementByXpath('//*[@id="user"]/text()').data;
+
+	getGraphDataObject.bar(username);
+    function getElementByXpath (path) {
+        return document.evaluate(path, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    }
+
+$( "#project" ).autocomplete({
+minLength: 0,
+source: stocks,
+focus: function( event, ui ) {
+$( "#project" ).val( ui.item.label );
+return false;
+},
+select: function( event, ui ) {
+//alert("You have selected "+ui.item.label);
+			
+			// Fetching data for selected stock
+			
+		  var urlnew = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quotes%20"+
+                "where%20symbol%20in%20%28%22"+ui.item.value+"%22%29&format=json&diagnostics="+
+                "true&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&callback=";
+		  console.log(urlnew);
+		  $.ajax({
+		  url: urlnew,
+		  dataType: 'json',
+		  success:function( json ) {
+			console.log(json);
+			var det;
+			document.getElementById("datentime").innerHTML	= json.query.results.quote.LastTradeDate +" "+json.query.results.quote.LastTradeTime+" ET";
+			
+			document.getElementById("curprice").innerHTML = " $"+json.query.results.quote.LastTradePriceOnly;
+			
+			if(json.query.results.quote.Change>0)
+			{
+				det = '<h4><button type="button" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-arrow-up"></span></button> '+json.query.results.quote.Change+' ('+json.query.results.quote.ChangeinPercent+')</h4>';
+			}
+			else
+			{
+				det = '<h4><button type="button" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-arrow-down"></span></button> '+json.query.results.quote.Change+' ('+json.query.results.quote.ChangeinPercent+')</h4>';
+			}
+			document.getElementById("stockdetailsdiv").innerHTML = det;
+		  }
+		  });
+				
+			var form =  '<div class="row"> ' +
+						'<div class="col-md-10"> ' +
+						'<form class="form-horizontal"> ' +
+						'<div class="form-group"> ' +
+						'<label class="col-md-3 control-label" for="name">Stock</label> ' +
+						'<div class="col-md-5"> ' +
+						'<input name="name" id="stock" type="text" value="'+ui.item.label+'" class="form-control input-md"> ' +
+						'</div> ' +
+						'</div> ' +
+						'<div class="form-group"> ' +
+						'<label class="col-md-3 control-label" for="Type">Type</label> ' +
+						'<div class="col-md-5"> ' +
+						'<select id="type" class="form-control">'+
+						'<option value="buy">Buy</option>'+
+						'<option value="sell">Sell</option>'+
+						'</select>'+
+						'</div> '+ 
+						'</div>' +
+						'<div class="form-group"> ' +
+						'<label class="col-md-3 control-label" for="Price Type">Price Type</label> ' +
+						'<div class="col-md-5"> ' +
+						'<select id="pricetype" class="form-control">'+
+						'<option value="LOrder">Limit Order</option>'+
+						'<option value="MOrder">Market Order</option>'+
+						'</select>'+
+						'</div> '+ 
+						'</div>'+
+						'<div class="form-group"> ' +
+						'<label class="col-md-3 control-label" for="TIF">TIF</label> ' +
+						'<div class="col-md-5"> ' +
+						'<select id="subtype" class="form-control">'+
+						'<option value="gtc">GTC</option>'+
+						'<option value="fok">FOK</option>'+
+						'</select>'+
+						'</div> '+ 
+						'</div>'+
+						'<div class="form-group"> ' +
+						'<label class="col-md-3 control-label" for="price">Price</label> ' +
+						'<div class="col-md-5"> ' +
+						'<input id="price" name="name" type="text" placeholder="Price" class="form-control input-md"> ' +
+						'</div> ' +
+						'</div> ' +
+						'<div class="form-group"> ' +
+						'<label class="col-md-3 control-label" for="quantity">Quantity</label> ' +
+						'<div class="col-md-5"> ' +
+						'<input id="quantity" name="name" type="text" placeholder="Quantity" class="form-control input-md"> ' +
+						'</div> ' +
+						'</div> ' +
+						'</form>'+
+						
+						'</div>'+ 
+						'<div class="col-md-5" style="margin-left:-175px;"><h2 style="display:inline;">'+ui.item.label+'</h2><div id="curprice" style = "display:inline;font-size:22px;"></div><h5>NASDAQ:'+ui.item.value.toUpperCase()+'<div id="datentime"></div></h5><div id="stockdetailsdiv"></div></div>'+
+						'</div>'	
+						
+			
+			bootbox.dialog({
+		  message: form,
+		  title: "You are going to place an order for "+ui.item.label,
+		  buttons: {
+			success: {
+			  label: "Place Order",
+			  className: "btn-success",
+			  callback: function() {
+                 statusPlaceOrder.place_trade(ui.item.value,username);// function defined in statusPlaceOrder.js
+			  }
+			},
+			
+			main: {
+			  label: "Add to Watchlist",
+			  className: "btn-primary",
+			  callback: function() {
+
+                  statusPlaceOrder.addToWatchlist(ui.item.label,ui.item.value,username);// function defined in statusPlaceOrder.js
+              }
+			}
+		  }
+		});
+
+//$( "#project" ).val( ui.item.label );
+//$( "#project-id" ).val( ui.item.value );
+//$( "#project-description" ).html( ui.item.desc );
+//$( "#project-icon" ).attr( "src", "images/" + ui.item.icon );
+return false;
+}
+})
+.autocomplete( "instance" )._renderItem = function( ul, item ) {
+//ul.addClass("nav nav-pills nav-stacked");
+ul.addClass("dropdowncustom");
+return $( "<li class=\"dropdowncustom\">" )
+.append( "<a  style=\"max-height:100px;\">" + item.label + "<br>" + item.desc + "</a>" )
+.appendTo( ul );
+};
+
+});
+</script>
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Navigation -->
+        <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="home.ejs">SB Admin</a>
+				
+				
+				
+            </div>
+				
+				<input style="float: left;width:300px;margin:10px;margin-left:150px;" class="form-control" id="project" type="text" name="fname" placeholder="Search, Buy and Sell Stocks"></input>
+
+            <div style="display:none;">
+                <input id="username" type="text" name="username" ><%= userData.username %></input>
+                <input id="watchlist" type="text" name="watchlist" ><%= userData.watchlist %></input>
+            </div>
+
+            <!-- Top Menu Items -->
+            <ul class="nav navbar-right top-nav">
+			
+                
+                <li class="dropdown">
+                    <a id ="user" href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i><%=username%><b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="#"><i class="fa fa-fw fa-user"></i> Profile</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-fw fa-envelope"></i> Inbox</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-fw fa-gear"></i> Settings</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li >
+                            <a href="#" id="btn-logout"><i class="fa fa-fw fa-power-off"></i> Log Out</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav side-nav">
+                    <li class="active">
+                        <a href="#Portfolio"><i class="fa fa-fw fa-briefcase"></i> Portfolio</a>
+                    </li>
+                    <li>
+                        <a href="#Watchlist"><i class="fa fa-fw fa-eye-slash"></i> Watchlist</a>
+                    </li>
+                    <li>
+                        <a href="#NewsFeed"><i class="fa fa-fw fa-tasks"></i> News Feed</a>
+                    </li>
+                    <li>
+                        <a href="#Library"><i class="fa fa-fw fa-book"></i> Library</a>
+                    </li>
+                    <li>
+                        <a href="#Trivia"><i class="fa fa-fw fa-gamepad"></i> Prediction Trivia</a>
+                    </li>
+           
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </nav>
+
+        <div id="page-wrapper">
+
+            <div class="container-fluid">
+
+                <!-- Page Heading -->
+				
+				<div id="myModal" class="modal fade">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+								<h4 class="modal-title" class="alert alert-info"><strong> Successfully Logged In! </strong> </h4>
+							</div>
+							<div class="modal-body" class="alert alert-info" class="success">
+								
+								<p class="text-primary"><strong> Just keep going. Everybody gets better if they keep at it. </strong></div></p>
+							</div>
+						</div>
+					</div>
+				
+			
+				<section id="Portfolio">
+                <!-- Page Heading -->
+				
+				<div class="panel-body">	
+				<div class="row">
+					
+                    <div class="col-lg-3">
+					 <i class="fa fa-area-chart fa-5x"></i> 
+                        <h2 class="page-header">
+						    <i class="fa fa-dashboard"></i><strong> Portfolio Overview</strong>  
+                        </h2>
+                    
+                
+					</div>
+					
+					<div class="col-lg-9 col-md-offset-2 col-md-9">
+                        <div class="panel panel-green">
+                            <div class="panel-heading">
+                                <div class="row">
+                                    <div class="col-xs-4">
+                                        <i class="fa fa-chevron-circle-up fa-5x"></i>        
+                                    </div>
+                                    <span><div class="col-xs-6 text-left">
+                                        <div class="huge">5000$
+                                        <h4><strong>Initial Corpus</strong></h4></div>
+                                    </div>
+									<div class="col-xs-6 text-center">
+                                        <div class="huge">5000$
+                                        <h4><strong></strong></h4></div>
+                                    </div></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+				</div>
+					Track all your investments, cash flow and assets. And follow the road to riches!
+				</div>
+
+                <!-- /.row -->
+				
+				
+				<div class="row">
+                    <div class="col-lg-8" class="bg-info">
+                        <div class="panel panel-default" class="bg-info">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> Portfolio Performance</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div id="morris-area-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+					<div class="col-lg-4" class="bg-info">
+                        <div class="panel panel-default" class="bg-info">
+                            <div class="panel-heading" class="bg-info">
+                                <h3 class="panel-title"><i class="fa fa-money fa-fw"></i> My Portfolio</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <div name="portfolio">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              <div class="row">
+                    <div class="col-lg-4" class="bg-info">
+                        <div class="panel panel-default" class="bg-info">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><i class="fa fa-long-arrow-right fa-fw"></i> Profit/Loss Holdings Chart</h3>
+                            </div>
+                            <div class="panel-body">
+                            <div id="morris-donut-chart"></div>    
+                            </div>
+                        </div>
+                    </div>
+					
+                    
+                    <div class="col-lg-8" class="bg-info">
+                        <div class="panel panel-default" class="bg-info">
+                            <div class="panel-heading" class="bg-info">
+                                <h3 class="panel-title"><i class="fa fa-money fa-fw"></i> Transactions Panel</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="table-responsive">
+
+                                        <div name="transactionTable">
+
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.row -->
+ </section>
+ <section id="Watchlist">
+		        <div class="panel-body">
+				<div class="row">
+                    <div class="col-lg-12">
+					 <i class="fa fa-area-chart fa-5x"></i> 
+                        <h2 class="page-header">
+						    <i class="fa fa-camera-retro"></i><strong> Watchlist</strong>  
+                        </h2>
+                    </div>
+					<div class="panel-body">Real-time market details on the scrips of your choice simultaneously. Know what you own, and know why you own it.
+					</div>
+                </div>
+				</div>
+				
+				
+                <!-- /.row -->
+				<div class="row">
+                    <div class="col-lg-7" class="bg-info">
+                        <div class="panel panel-default" class="bg-info">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> Market Watchlist Plot</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div id="morris-line-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+					<div class="col-lg-5" class="bg-info">
+                        <div class="panel panel-default" class="bg-info">
+                            <div class="panel-heading" class="bg-info">
+                                <h3 class="panel-title"><i class="fa fa-money fa-fw"></i> Market WatchList Panel</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <div name="watchlistTable">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+             
+					
+				</div>
+				
+				
+			</section>	
+<section id="NewsFeed">
+				<div class="panel-body">
+				<div class="row">
+                    <div class="col-lg-12">
+					 
+                        <h2 class="page-header">
+						     <i class="fa fa-list-alt"></i><strong> News Feed</strong>   
+                        </h2>
+                    </div>
+					<div class="panel-body">Receive market news throughout the day to keep yourself updated. When action grows unprofitable, gather information.
+					</div>
+                </div>
+				<div class="panel-body">	
+					<form class="navbar-form navbar-left" role="search">
+					<div class="form-group">
+					<input type="text" class="form-control" id="feeds" placeholder="Search for market news">
+					</div>
+					</form></div>
+				</div>
+				
+
+				<div class="row">
+                    <div class="col-lg-7" class="bg-info">
+                        <div class="panel panel-default" class="bg-info">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> Market Watchlist Plot</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <div name="feed">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+					<div class="col-lg-5" class="bg-info">
+                        <div class="panel panel-default" class="bg-info" >
+                            <div class="panel-heading" class="bg-info">
+                                <h3 class="panel-title"><i class="fa fa-money fa-fw"></i> Market WatchList Panel</h3>
+                            </div>
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Order #</th>
+                                                <th>Order Date</th>
+                                                <th>Order Time</th>
+                                                <th>Price (USD)</th>
+												<th>Market/Limit</th>
+												<th>Buy/Sell</th>
+												<th>Qty</th>
+												<th>Status</th>
+                                            </tr>
+                                        </thead>
+										
+                                        <tbody>
+										
+                                            <tr>
+                                                <td>3326</td>
+                                                <td>10/21/2013</td>
+                                                <td>3:29 PM</td>
+                                                <td>$321.33</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3325</td>
+                                                <td>10/21/2013</td>
+                                                <td>3:20 PM</td>
+                                                <td>$234.34</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3324</td>
+                                                <td>10/21/2013</td>
+                                                <td>3:03 PM</td>
+                                                <td>$724.17</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3323</td>
+                                                <td>10/21/2013</td>
+                                                <td>3:00 PM</td>
+                                                <td>$23.71</td>
+                                            </tr>
+                                            <tr>
+                                                <td>3322</td>
+                                                <td>10/21/2013</td>
+                                                <td>2:49 PM</td>
+                                                <td>$8345.23</td>
+                                            </tr>
+                                            
+                                        </tbody>
+							
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+					
+				</div>
+				
+			</section>							
+<section id="Library">
+				<div class="panel-body">
+				<div class="row">
+                    <div class="col-lg-12">
+					 
+                        <h2 class="page-header">
+						     <i class="fa fa-file-text-o"></i><strong> Library</strong>   
+                        </h2>
+                    </div>
+					<div class="panel-body">Make use of the specific set of tailor-made courses for the users to comprehend the financial jargons. An investment in knowledge always pays the best interest.
+					</div>
+                </div>
+				</div>
+
+		
+                <!-- /.row -->
+				<div class="row">
+		  		<div class="col-md-6">
+		  			<div class="content-box-large">
+		  				<div class="panel-heading">
+							<div class="panel-title">New vs Returning Visitors</div>
+							
+							<div class="panel-options">
+								<a href="#" data-rel="collapse"><i class="glyphicon glyphicon-refresh"></i></a>
+								<a href="#" data-rel="reload"><i class="glyphicon glyphicon-cog"></i></a>
+							</div>
+						</div>
+		  				<div class="panel-body">
+		  					Ut tristique adipiscing mauris, sit amet suscipit metus porta quis. Donec dictum tincidunt erat, eu blandit ligula. Nam sit amet dolor sapien. Quisque velit erat, congue sed suscipit vel, feugiat sit amet enim. Suspendisse interdum enim at mi tempor commodo. Sed tincidunt sed tortor eu scelerisque. Donec luctus malesuada vulputate. Nunc vel auctor metus, vel adipiscing odio. Aliquam aliquet rhoncus libero, at varius nisi pulvinar nec. Aliquam erat volutpat. Donec ut neque mi. Praesent enim nisl, bibendum vitae ante et, placerat pharetra magna. Donec facilisis nisl turpis, eget facilisis turpis semper non. Maecenas luctus ligula tincidunt iasdsd vitae ante et, 
+				  			<br /><br />
+				  			Interdum et malesuada fames ac ante ipsum primis in faucibus. Quisque sed consectetur erat. Maecenas in elementum libero. Sed consequat pellentesque ultricies. Ut laoreet vehicula nisl sed placerat. Duis posuere lectus n, eros et hendrerit pellentesque, ante magna condimentum sapien, eget ultrices eros libero non orci. Etiam varius diam lectus.
+							<br /><br />
+		  				</div>
+		  			</div>
+		  		</div>
+
+		  		<div class="col-md-6">
+		  			<div class="row">
+		  				<div class="col-md-12">
+		  					<div class="content-box-header">
+			  					<div class="panel-title">New vs Returning Visitors</div>
+								
+								<div class="panel-options">
+									<a href="#" data-rel="collapse"><i class="glyphicon glyphicon-refresh"></i></a>
+									<a href="#" data-rel="reload"><i class="glyphicon glyphicon-cog"></i></a>
+								</div>
+				  			</div>
+				  			<div class="content-box-large box-with-header">
+				  				
+					  			Pellentesque luctus quam quis consequat vulputate. Sed sit amet diam ipsum. Praesent in pellentesque diam, sit amet dignissim erat. Aliquam erat volutpat. Aenean laoreet metus leo, laoreet feugiat enim suscipit quis. Praesent mauris mauris, ornare vitae tincidunt sed, hendrerit eget augue. Nam nec vestibulum nisi, eu dignissim nulla.
+								<br /><br />
+							</div>
+		  				</div>
+		  			</div>
+		  			<div class="row">
+		  				<div class="col-md-12">
+		  					<div class="content-box-header">
+			  					<div class="panel-title">New vs Returning Visitors</div>
+								
+								<div class="panel-options">
+									<a href="#" data-rel="collapse"><i class="glyphicon glyphicon-refresh"></i></a>
+									<a href="#" data-rel="reload"><i class="glyphicon glyphicon-cog"></i></a>
+								</div>
+				  			</div>
+				  			<div class="content-box-large box-with-header">
+				  				
+					  			Pellentesque luctus quam quis consequat vulputate. Sed sit amet diam ipsum. Praesent in pellentesque diam, sit amet dignissim erat. Aliquam erat volutpat. Aenean laoreet metus leo, laoreet feugiat enim suscipit quis. Praesent mauris mauris, ornare vitae tincidunt sed, hendrerit eget augue. Nam nec vestibulum nisi, eu dignissim nulla.
+								<br /><br />
+							</div>
+		  				</div>
+		  			</div>
+		  		</div>
+		  	</div>
+
+		  	<div class="row">
+		  		<div class="col-md-12 panel-warning">
+		  			<div class="content-box-header panel-heading">
+	  					<div class="panel-title ">New vs Returning Visitors</div>
+						
+						<div class="panel-options">
+							<a href="#" data-rel="collapse"><i class="glyphicon glyphicon-refresh"></i></a>
+							<a href="#" data-rel="reload"><i class="glyphicon glyphicon-cog"></i></a>
+						</div>
+		  			</div>
+		  			<div class="content-box-large box-with-header">
+			  			Pellentesque luctus quam quis consequat vulputate. Sed sit amet diam ipsum. Praesent in pellentesque diam, sit amet dignissim erat. Aliquam erat volutpat. Aenean laoreet metus leo, laoreet feugiat enim suscipit quis. Praesent mauris mauris, ornare vitae tincidunt sed, hendrerit eget augue. Nam nec vestibulum nisi, eu dignissim nulla.
+						<br /><br />
+					</div>
+		  		</div>
+		  	</div>
+    </section>
+				
+			
+								
+				
+				
+				
+				
+				
+				
+				
+			
+				</div>
+                <!-- /.Container -->
+         
+
+        </div>
+        <!-- /#page-wrapper -->
+
+    </div>
+    <!-- /#wrapper -->
+
+				
+				
+				
+				
+				
+    <!-- <script src="js/jquery-1.11.0.js"></script> -->
+
+	
+	
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="/vendor/bootstrap.min.js"></script>
+	<script src="/vendor/bootbox.min.js"></script>
+	
+	
+    <!-- Morris Charts JavaScript -->
+    <script src="/vendor/morris/raphael.min.js"></script>
+    <script src="/vendor/morris/morris.min.js"></script>
+    <script src="/vendor/morris/morris-data.js"></script>
+
+
+    <script src="/js/views/Graph.js"></script>
+    <script src="/js/views/home.js"></script>
+    <script src="/js/views/statusPlaceOrder.js"></script>
+    <script src="/js/controllers/homeController.js"></script>
+
+    <script src="/js/Table-generators/portfolio.js"></script>
+    <script src="/js/Table-generators/Feeds.js"></script>
+
+
+</body>
+
+</html>

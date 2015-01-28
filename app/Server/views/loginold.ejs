@@ -1,0 +1,76 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Node.js Login</title>
+    <link rel="stylesheet" href="/vendor/bootstrap.min.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-1890531-10']);
+      _gaq.push(['_setDomainName', 'braitsch.io']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+       ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+  <body></body>
+  <div id="login-container">
+    <form method="post" id="login-form" class="well span4">
+      <h1>Hello!</h1>
+      <p class="subheading">Please Login To Your Account</p>
+      <label>Username </label>
+      <input type="text" name="user" id="user-tf" class="span4 required">
+      <label>Password</label>
+      <input type="password" name="pass" id="pass-tf" class="span4 required">
+      <button type="submit" id="btn-login" class="btn btn-primary"><i class="icon-lock icon-white"></i>Sign in</button>
+      <label id="remember-me" class="checkbox">Remember Me
+        <input type="checkbox" checked="checked">
+      </label>
+      <div class="clear-fix"></div>
+      <hr>
+      <div class="btm-links"><a href="#" id="forgot-password">Forgot Your Password?</a><a href="/signup" id="create-account">Create An Account</a></div>
+    </form>
+  </div>
+  <div class="modal-alert modal hide fade">
+    <div class="modal-header">
+      <button data-dismiss="modal" class="close">x</button>
+      <h3></h3>
+    </div>
+    <div class="modal-body">
+      <p></p>
+    </div>
+    <div class="modal-footer">
+      <button data-dismiss="modal" id="ok" class="btn btn-warning">OK</button>
+    </div>
+  </div>
+  <div id="get-credentials" class="modal-single-input modal hide fade">
+    <div class="modal-header">
+      <button data-dismiss="modal" class="close">x</button>
+      <h3>Retrieve Password</h3>
+    </div>
+    <div class="modal-body">
+      <form method="post" id="get-credentials-form" class="well span5">
+        <p>Please enter the email address associated with your account</p>
+        <input type="text" name="email" id="email-tf" class="span5 required">
+        <button type="submit" id="submit" class="btn btn-primary">Submit</button>
+        <button data-dismiss="modal" id="cancel" class="btn">Cancel</button>
+        <div class="alert alert-error hide"></div>
+        <button data-dismiss="alert" class="close"></button>
+      </form>
+    </div>
+    <div class="modal-footer"></div>
+  </div>
+  <script src="/vendor/jquery.min.js"></script>
+  <script src="/vendor/jquery.form.js"></script>
+  <script src="/vendor/bootstrap-modal.js"></script>
+  <script src="/vendor/bootstrap-transition.js"></script>
+  <script src="/js/views/login.js"></script>
+  <script src="/js/controllers/loginController.js"></script>
+  <script src="/js/form-validators/loginValidator.js"></script>
+  <script src="/js/form-validators/emailValidator.js"></script>
+</html>
